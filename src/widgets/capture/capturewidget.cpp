@@ -388,19 +388,19 @@ void CaptureWidget::handleButtonLeftClick(CaptureToolButton* b)
 void CaptureWidget::xywhTick()
 {
     m_xywhDisplay = false;
-    repaint();
+    update();
 }
 
 void CaptureWidget::onDisplayGridChanged(bool display)
 {
     m_displayGrid = display;
-    repaint();
+    update();
 }
 
 void CaptureWidget::onGridSizeChanged(int size)
 {
     m_gridSize = size;
-    repaint();
+    update();
 }
 
 void CaptureWidget::showxywh(bool show)
@@ -409,7 +409,7 @@ void CaptureWidget::showxywh(bool show)
       ConfigHandler().value("showSelectionGeometryHideTime").toInt();
     m_xywhDisplay = show;
     m_xywhTimer.stop();
-    repaint();
+    update();
     if (show && timeout != 0) {
         m_xywhTimer.start(timeout);
     }
@@ -1409,8 +1409,8 @@ void CaptureWidget::onToolSizeChanged(int t)
         updateTool(toolItem);
     }
 
-    // Force a repaint to prevent artifacting
-    this->repaint();
+    // Trigger update to prevent artifacting
+    this->update();
 }
 
 void CaptureWidget::onToolSizeSettled(int size)
