@@ -75,6 +75,7 @@ void ButtonHandler::updatePosition(const QRect& selection)
     }
     // Copy of the selection area for internal modifications
     m_selection = intersectWithAreas(selection);
+
     updateBlockedSides();
     ensureSelectionMinimunSize();
     // Indicates the actual button to be moved
@@ -122,41 +123,47 @@ void ButtonHandler::updatePosition(const QRect& selection)
               horizontalPoints(center, addCounter, true);
             moveButtonsToPoints(positions, elemIndicator);
         }
-        // Add buttons at the right side of the selection
-        if (!m_blockedRight && elemIndicator < vecLength) {
-            int addCounter = buttonsPerCol;
-            addCounter = qBound(0, addCounter, vecLength - elemIndicator);
-
-            QPoint center = QPoint(m_selection.right() + m_separator,
-                                   m_selection.center().y());
-            QVector<QPoint> positions =
-              verticalPoints(center, addCounter, false);
-            moveButtonsToPoints(positions, elemIndicator);
+        // Add them inside the area when there is no more space
+        else {
+            m_selection = selection;
+            positionButtonsInside(elemIndicator);
+            break; // the while
         }
+        // // Add buttons at the right side of the selection
+        // if (!m_blockedRight && elemIndicator < vecLength) {
+        //     int addCounter = buttonsPerCol;
+        //     addCounter = qBound(0, addCounter, vecLength - elemIndicator);
+
+        //     QPoint center = QPoint(m_selection.right() + m_separator,
+        //                            m_selection.center().y());
+        //     QVector<QPoint> positions =
+        //       verticalPoints(center, addCounter, false);
+        //     moveButtonsToPoints(positions, elemIndicator);
+        // }
         // Add buttons at the top of the selection
-        if (!m_blockedTop && elemIndicator < vecLength) {
-            int addCounter = buttonsPerRow + elemCornersTop;
-            addCounter = qBound(0, addCounter, vecLength - elemIndicator);
-            QPoint center = QPoint(m_selection.center().x(),
-                                   m_selection.top() - m_buttonExtendedSize);
-            if (addCounter == 1 + buttonsPerRow) {
-                adjustHorizontalCenter(center);
-            }
-            QVector<QPoint> positions =
-              horizontalPoints(center, addCounter, false);
-            moveButtonsToPoints(positions, elemIndicator);
-        }
-        // Add buttons at the left side of the selection
-        if (!m_blockedLeft && elemIndicator < vecLength) {
-            int addCounter = buttonsPerCol;
-            addCounter = qBound(0, addCounter, vecLength - elemIndicator);
+        // else  {
+        //     int addCounter = buttonsPerRow + elemCornersTop;
+        //     addCounter = qBound(0, addCounter, vecLength - elemIndicator);
+        //     QPoint center = QPoint(m_selection.center().x(),
+        //                            m_selection.top() - m_buttonExtendedSize);
+        //     if (addCounter == 1 + buttonsPerRow) {
+        //         adjustHorizontalCenter(center);
+        //     }
+        //     QVector<QPoint> positions =
+        //       horizontalPoints(center, addCounter, false);
+        //     moveButtonsToPoints(positions, elemIndicator);
+        // }
+        // // Add buttons at the left side of the selection
+        // if (!m_blockedLeft && elemIndicator < vecLength) {
+        //     int addCounter = buttonsPerCol;
+        //     addCounter = qBound(0, addCounter, vecLength - elemIndicator);
 
-            QPoint center = QPoint(m_selection.left() - m_buttonExtendedSize,
-                                   m_selection.center().y());
-            QVector<QPoint> positions =
-              verticalPoints(center, addCounter, true);
-            moveButtonsToPoints(positions, elemIndicator);
-        }
+        //     QPoint center = QPoint(m_selection.left() - m_buttonExtendedSize,
+        //                            m_selection.center().y());
+        //     QVector<QPoint> positions =
+        //       verticalPoints(center, addCounter, true);
+        //     moveButtonsToPoints(positions, elemIndicator);
+        // }
         // If there are elements for the next cycle, increase the size of the
         // base area
         if (elemIndicator < vecLength && !(m_allSidesBlocked)) {

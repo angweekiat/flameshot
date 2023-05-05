@@ -1223,7 +1223,7 @@ void CaptureWidget::initSelection()
           m_selection->geometry().intersected(rect());
         m_context.selection = extendedRect(constrainedToCaptureArea);
         updateSizeIndicator();
-        m_buttonHandler->hide();
+        m_buttonHandler->updatePosition(m_selection->geometry());
         updateCursor();
         OverlayMessage::pop();
     });
@@ -1237,8 +1237,6 @@ void CaptureWidget::initSelection()
             }
             m_buttonHandler->updatePosition(m_selection->geometry());
             m_buttonHandler->show();
-        } else {
-            m_buttonHandler->hide();
         }
     });
     connect(m_selection, &SelectionWidget::visibilityChanged, this, [this]() {
