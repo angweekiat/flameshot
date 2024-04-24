@@ -42,6 +42,7 @@ public:
     AbstractLogger& addOutputString(QString& str);
     AbstractLogger& attachNotificationPath(const QString& path);
     AbstractLogger& enableMessageHeader(bool enable);
+    AbstractLogger& overrideMessageHeader(const QString& header);
 
 private:
     QString messageHeader(Channel channel, Target target);
@@ -51,4 +52,5 @@ private:
     QList<QTextStream*> m_textStreams;
     QString m_notificationPath;
     bool m_enableMessageHeader = true;
+    QString m_overrideMessageHeader{};
 };

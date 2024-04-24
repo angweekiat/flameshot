@@ -113,10 +113,22 @@ AbstractLogger& AbstractLogger::enableMessageHeader(bool enable)
 }
 
 /**
+ * @brief Overwrite message header to input text
+ */
+AbstractLogger& AbstractLogger::overrideMessageHeader(const QString& header)
+{
+    m_overrideMessageHeader = header;
+    return *this;
+}
+
+/**
  * @brief Generate a message header for the given channel and target.
  */
 QString AbstractLogger::messageHeader(Channel channel, Target target)
 {
+    if (!m_overrideMessageHeader.isEmpty()) {
+        return m_overrideMessageHeader;
+    }
     if (!m_enableMessageHeader) {
         return "";
     }

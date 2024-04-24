@@ -16,6 +16,7 @@
 #include "src/tools/imgupload/storages/imguploaderbase.h"
 #include "src/utils/confighandler.h"
 #include "src/utils/screengrabber.h"
+#include "src/utils/filenamehandler.h"
 #include "src/widgets/capture/capturewidget.h"
 #include "src/widgets/capturelauncher.h"
 #include "src/widgets/imguploaddialog.h"
@@ -30,6 +31,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QVersionNumber>
+#include <fstream>
+#include <sstream>
 
 #if defined(Q_OS_MACOS)
 #include <QScreen>
@@ -367,6 +370,49 @@ void Flameshot::exportCapture(const QPixmap& capture,
         } else {
             saveToFilesystem(capture, path);
         }
+    }
+
+    if (tasks & CR::OCR) {
+
+        // Set DPI to 1000, scale image size x3 to improve OCR accuracy
+        QPixmap in = capture;
+        in.setDevicePixelRatio(1000);
+        in = in.scaledToHeight(in.height()*3);
+
+        // Save image to file
+        QString ocrImagePath = FileNameHandler().properScreenshotPath("/tmp/flameshot_ocr", ConfigHandler().saveAsFileExtension());
+        saveToFilesystem(in, ocrImagePath, "", false);
+
+        // Build OCR command: tesseract <image> - -l eng --psm 3 <output text file>
+        QString ocrTextPath = ocrImagePath + ".txt";
+        std::string cmd = "/usr/bin/tesseract " + ocrImagePath.toStdString() + " - -l eng --psm 3 > " + ocrTextPath.toStdString();
+        AbstractLogger::info(AbstractLogger::Target::Stdout) << QString::fromStdString("Running cmd:" + cmd);
+
+        // Run command
+        auto res = std::system(cmd.c_str());
+        AbstractLogger::info(AbstractLogger::Target::Stdout) << QString::fromStdString("Cmd results:" + std::to_string(res));
+
+        // Read text file and copy to clipboard
+        QString ocrText;
+        {
+            std::ifstream file{ocrTextPath.toStdString()};
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+
+            // Trim whitespace
+            std::string text = buffer.str();
+            text.erase(0, text.find_first_not_of(" "));
+            text.erase(text.find_last_not_of(" ") + 1);
+
+            ocrText = QString::fromStdString(text);
+            FlameshotDaemon::copyToClipboard(ocrText, "");
+        }
+
+
+        // Send notification
+        QString headerText = QString::fromStdString("Flameshot: OCR copied to clipboard");
+        AbstractLogger::info(AbstractLogger::Target::Notification)
+            .overrideMessageHeader(headerText) << ocrText;
     }
 
     if (tasks & CR::COPY) {

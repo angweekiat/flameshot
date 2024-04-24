@@ -29,7 +29,8 @@
 
 bool saveToFilesystem(const QPixmap& capture,
                       const QString& path,
-                      const QString& messagePrefix)
+                      const QString& messagePrefix,
+                      bool logResult)
 {
     QString completePath = FileNameHandler().properScreenshotPath(
       path, ConfigHandler().saveAsFileExtension());
@@ -40,6 +41,10 @@ bool saveToFilesystem(const QPixmap& capture,
     QString notificationPath = completePath;
     if (!saveMessage.isEmpty()) {
         saveMessage += " ";
+    }
+
+    if (!logResult) {
+        return okay;
     }
 
     if (okay) {
