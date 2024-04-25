@@ -575,29 +575,31 @@ void CaptureWidget::paintEvent(QPaintEvent* paintEvent)
         if (xybox.height() > selection.height())
             xybox.setHeight(selection.height());
 #endif
-        switch (position) {
-            case GeneralConf::xywh_top_left:
-                x0 = selection.left();
-                y0 = selection.top();
-                break;
-            case GeneralConf::xywh_bottom_left:
-                x0 = selection.left();
-                y0 = selection.bottom() - xybox.height();
-                break;
-            case GeneralConf::xywh_top_right:
-                x0 = selection.right() - xybox.width();
-                y0 = selection.top();
-                break;
-            case GeneralConf::xywh_bottom_right:
-                x0 = selection.right() - xybox.width();
-                y0 = selection.bottom() - xybox.height();
-                break;
-            case GeneralConf::xywh_center:
-            default:
-                x0 = selection.left() + (selection.width() - xybox.width()) / 2;
-                y0 =
-                  selection.top() + (selection.height() - xybox.height()) / 2;
-        }
+        // switch (position) {
+        //     case GeneralConf::xywh_top_left:
+        //         x0 = selection.left();
+        //         y0 = selection.top();
+        //         break;
+        //     case GeneralConf::xywh_bottom_left:
+        //         x0 = selection.left();
+        //         y0 = selection.bottom() - xybox.height();
+        //         break;
+        //     case GeneralConf::xywh_top_right:
+        //         x0 = selection.right() - xybox.width();
+        //         y0 = selection.top();
+        //         break;
+        //     case GeneralConf::xywh_bottom_right:
+        //         x0 = selection.right() - xybox.width();
+        //         y0 = selection.bottom() - xybox.height();
+        //         break;
+        //     case GeneralConf::xywh_center:
+        //     default:
+        //         x0 = selection.left() + (selection.width() - xybox.width()) / 2;
+        //         y0 =
+        //           selection.top() + (selection.height() - xybox.height()) / 2;
+        // }
+        x0 = selection.left();
+        y0 = selection.top() - xybox.height();
 
         QColor uicolor = ConfigHandler().uiColor();
         uicolor.setAlpha(200);
